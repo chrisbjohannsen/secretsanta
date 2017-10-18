@@ -1,12 +1,13 @@
 package net.orbitdev.secretsanta.service
 
+import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.IFamilyMemberStore
 
 class SecretSantaService {
 
-    IFamilyMemberStore familyMemberStore
-    ISecretSantaStore matchStore
+    private IFamilyMemberStore familyMemberStore
+    private ISecretSantaStore matchStore
 
     SecretSantaService(IFamilyMemberStore familyStore, ISecretSantaStore matchStore) {
         this.familyMemberStore = familyStore
@@ -16,25 +17,39 @@ class SecretSantaService {
     void generateMatches(){
         familyMemberStore.members.each{
             if(!hasMatch(it.name, MATCH_TYPE.GIVER)){
-                matchStore.addMatch(it.name, makeMatch(it.name))
+                matchStore.addMatch(it.name, makeMatch(it.name, MATCH_TYPE.RECEIVER))
             }
             if(!hasMatch(it.name, MATCH_TYPE.RECEIVER)){
-                matchStore.addMatch(makeMatch(it.name),it.name)
+                matchStore.addMatch(makeMatch(it.name,MATCH_TYPE.GIVER),it.name)
             }
 
         }
     }
 
-    //TODO: This needs to check if the matchName is already matched for the type
-    String makeMatch(String matchName) {
-        String matchedName = matchName
+    /**
+     * Get a random name from the members store that isn't the passed in name
+     * Make sure the random name is not already in a match set for the particular match
+     * type.
+     * @param matchName
+     * @return name of the match
+     */
+    private String makeMatch(String matchName, MATCH_TYPE matchType) {
+        Closure findMatch
+        findMatch = { String name, MATCH_TYPE type ->
 
-        while(matchedName == matchName){
-            def random = familyMemberStore.getRandomMember()
-            matchedName = random.name
+            FamilyMember random = familyMemberStore.getRandomMember()
+            if(!random){
+                throw new Exception("No Members in store")
+            }
+
+            if(!hasMatch(random.name,type) && random.name != name) {
+                return random.name
+            }
+            findMatch(name, matchType) //call findMatch until we find an unmatched name
+
         }
 
-        return matchedName
+        findMatch(matchName, matchType)
     }
 
     /**
@@ -45,14 +60,16 @@ class SecretSantaService {
      * @param matchType
      * @return
      */
-    boolean hasMatch(String matchName, MATCH_TYPE matchType){
-        if(matchType == MATCH_TYPE.GIVER)
+    private boolean hasMatch(String matchName, MATCH_TYPE matchType){
+        if(matchType == MATCH_TYPE.GIVER){
             matchStore.hasReceiver(matchName)
-        else
+        } else {
             matchStore.hasGiver(matchName)
+        }
+
     }
 
-    enum MATCH_TYPE {
+    private enum MATCH_TYPE {
         GIVER,
         RECEIVER
     }
