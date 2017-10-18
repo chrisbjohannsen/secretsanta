@@ -11,7 +11,6 @@ class SecretSantaServiceTest extends Specification {
     IFamilyMemberStore familyStore
     ISecretSantaStore santaStore
     FamilyMember[] members
-    Map matches = [:]
 
     void setup() {
         members = [
@@ -27,20 +26,13 @@ class SecretSantaServiceTest extends Specification {
         familyStore = Mock(IFamilyMemberStore)
         familyStore.getMembers() >> members
         familyStore.getRandomMember() >> {
-            members[new Random().nextInt(members.size())]
+            if(members.size() > 0) {
+                return members[new Random().nextInt(members.size())]
+            }
+            return null
         }
 
         santaStore = Mock(ISecretSantaStore)
-        santaStore.addMatch() >> { giver, receiver ->
-            this.matches.put(giver, receiver)
-        }
-        santaStore.hasGiver() >> { receiver ->
-            return matches.containsValue(receiver)
-        }
-        santaStore.hasReceiver() >> { giver ->
-            return matches.containsKey(giver)
-        }
-
         service = new SecretSantaService(familyStore, santaStore)
     }
 
@@ -70,7 +62,8 @@ class SecretSantaServiceTest extends Specification {
     void "match cannot be self"() {
 
         expect:
-        assert service.makeMatch(name) != name
+        assert service.makeMatch(name,SecretSantaService.MATCH_TYPE.GIVER) != name
+        assert service.makeMatch(name,SecretSantaService.MATCH_TYPE.RECEIVER) != name
 
         where:
         name << [
@@ -92,5 +85,31 @@ class SecretSantaServiceTest extends Specification {
         then:
         16 * santaStore.addMatch(_,_)
 
+    }
+
+    void "handles 0 family members"(){
+        setup:
+        members = []
+
+        when:
+        service.generateMatches()
+
+        then:
+        thrown(Exception)
+    }
+
+    void "handles null family member"(){
+        setup:
+        def fstore = Mock(IFamilyMemberStore)
+        fstore.getMembers()>> members
+        fstore.getRandomMember() >> null
+
+        def sservice = new SecretSantaService(fstore,santaStore)
+
+        when:
+        sservice.generateMatches()
+
+        then:
+        thrown(Exception)
     }
 }
