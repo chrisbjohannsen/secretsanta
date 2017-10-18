@@ -1,6 +1,6 @@
 package net.orbitdev.secretsanta.net.orbitdev.secretsanta.db
 
-class SecretSantaStore implements ISecretSantaStore {
+class InMemorySecretSantaStore implements ISecretSantaStore {
 
     Map matches = [:]
 

@@ -34,6 +34,7 @@ class SecretSantaService {
      * @return name of the match
      */
     private String makeMatch(String matchName, MATCH_TYPE matchType) {
+
         Closure findMatch
         findMatch = { String name, MATCH_TYPE type ->
 
@@ -45,6 +46,7 @@ class SecretSantaService {
             if(!hasMatch(random.name,type) && random.name != name) {
                 return random.name
             }
+
             findMatch(name, matchType) //call findMatch until we find an unmatched name
 
         }
