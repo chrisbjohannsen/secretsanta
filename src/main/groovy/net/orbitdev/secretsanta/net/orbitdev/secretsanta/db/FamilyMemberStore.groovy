@@ -2,11 +2,22 @@ package net.orbitdev.secretsanta.net.orbitdev.secretsanta.db
 
 import net.orbitdev.secretsanta.domain.FamilyMember
 
-class FamilyMemberStore {
+class FamilyMemberStore implements IFamilyMemberStore {
 
-    FamilyMember[] familyMembers = []
+    //use a Set to prevent duplicates
+    Set<FamilyMember> familyMembers = []
 
-    void addMemeber(FamilyMember memberToAdd){
+    void addMember(FamilyMember memberToAdd){
         this.familyMembers << memberToAdd
+    }
+
+    @Override
+    FamilyMember[] getMembers() {
+        return this.familyMembers
+    }
+
+    @Override
+    FamilyMember getRandomMember() {
+        return null
     }
 }
