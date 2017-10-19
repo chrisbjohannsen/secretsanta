@@ -35,23 +35,25 @@ class SecretSantaService {
      */
     private String makeMatch(String matchName, MATCH_TYPE matchType) {
 
-        Closure findMatch
-        findMatch = { String name, MATCH_TYPE type ->
+        //clone members to help optimize randomizing
+        def memberClone = familyMemberStore.getMembers().collect()
+        memberClone.removeAll{ it.name == matchName } //remove self
+        findMatch(matchName, matchType, memberClone)
+    }
 
-            FamilyMember random = familyMemberStore.getRandomMember()
-            if(!random){
-                throw new Exception("No Members in store")
-            }
-
-            if(!hasMatch(random.name,type) && random.name != name) {
-                return random.name
-            }
-
-            findMatch(name, matchType) //call findMatch until we find an unmatched name
-
+    private String findMatch(String matchFor, MATCH_TYPE matchType, List<FamilyMember> memberList){
+        Random randomizer = new Random()
+        FamilyMember random = memberList[randomizer.nextInt(memberList.size())]
+        if(!random){
+            throw new Exception("No Members in store")
         }
 
-        findMatch(matchName, matchType)
+        if(!hasMatch(random.name,matchType)) {
+            return random.name
+        }
+
+        memberList.removeAll{ it.name == random.name } //remove already tested from list
+        findMatch(matchFor, matchType, memberList) //call findMatch until we find an unmatched name
     }
 
     /**

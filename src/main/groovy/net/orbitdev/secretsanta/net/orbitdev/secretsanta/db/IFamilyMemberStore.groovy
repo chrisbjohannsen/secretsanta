@@ -4,6 +4,6 @@ import net.orbitdev.secretsanta.domain.FamilyMember
 
 interface IFamilyMemberStore {
     void addMember(FamilyMember memberToAdd)
-    FamilyMember[] getMembers()
+    Set<FamilyMember> getMembers()
     FamilyMember getRandomMember()
 }

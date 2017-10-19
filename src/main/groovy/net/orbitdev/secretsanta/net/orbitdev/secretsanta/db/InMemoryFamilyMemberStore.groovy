@@ -12,7 +12,7 @@ class InMemoryFamilyMemberStore implements IFamilyMemberStore {
     }
 
     @Override
-    FamilyMember[] getMembers() {
+    Set<FamilyMember> getMembers() {
         return this.familyMembers
     }
 
