@@ -1,13 +1,15 @@
-package net.orbitdev.secretsanta.net.orbitdev.secretsanta.db
+package net.orbitdev.secretsanta.db
+
+import net.orbitdev.secretsanta.domain.FamilyMember
 
 class InMemorySecretSantaStore implements ISecretSantaStore {
 
     Map matches = [:]
 
     @Override
-    void addMatch(String giver, String receiver) {
-        if(!matches.containsKey(giver)){
-            matches.put(giver, receiver)
+    void addMatch(FamilyMember giver, FamilyMember receiver) {
+        if(!matches.containsKey(giver.name)){
+            matches.put(giver.name, receiver.name)
         }
     }
 

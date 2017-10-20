@@ -1,26 +1,30 @@
 package net.orbitdev.secretsanta.service
 
+import net.orbitdev.secretsanta.db.ISecretSantaStore
+import net.orbitdev.secretsanta.db.IFamilyMemberStore
 import net.orbitdev.secretsanta.domain.FamilyMember
-import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.ISecretSantaStore
-import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.IFamilyMemberStore
+import net.orbitdev.secretsanta.engine.IMatchEngine
+import net.orbitdev.secretsanta.engine.MatchType
 
 class SecretSantaService {
 
     private IFamilyMemberStore familyMemberStore
     private ISecretSantaStore matchStore
+    private IMatchEngine matchEngine
 
-    SecretSantaService(IFamilyMemberStore familyStore, ISecretSantaStore matchStore) {
+    SecretSantaService(IFamilyMemberStore familyStore, ISecretSantaStore matchStore, IMatchEngine matchEngine) {
         this.familyMemberStore = familyStore
         this.matchStore = matchStore
+        this.matchEngine = matchEngine
     }
 
     void generateMatches(){
         familyMemberStore.members.each{
-            if(!hasMatch(it.name, MATCH_TYPE.GIVER)){
-                matchStore.addMatch(it.name, makeMatch(it.name, MATCH_TYPE.RECEIVER))
+            if(!hasMatch(it.name, MatchType.GIVER)){
+                matchStore.addMatch(it, makeMatch(it, MatchType.RECEIVER))
             }
-            if(!hasMatch(it.name, MATCH_TYPE.RECEIVER)){
-                matchStore.addMatch(makeMatch(it.name,MATCH_TYPE.GIVER),it.name)
+            if(!hasMatch(it.name, MatchType.RECEIVER)){
+                matchStore.addMatch(makeMatch(it,MatchType.GIVER),it)
             }
 
         }
@@ -33,39 +37,39 @@ class SecretSantaService {
      * @param matchName
      * @return name of the match
      */
-    private String makeMatch(String matchName, MATCH_TYPE matchType) {
+    private FamilyMember makeMatch(FamilyMember matchName, MatchType matchType) {
 
         //clone members to help optimize randomizing
         def memberClone = familyMemberStore.getMembers().collect()
-        memberClone.removeAll{ it.name == matchName } //remove self
-        findMatch(matchName, matchType, memberClone)
+        memberClone.removeAll{ it.name == matchName.name } //remove self
+        matchEngine.findMatch(matchName, matchType, memberClone)
     }
 
-    private String findMatch(String matchFor, MATCH_TYPE matchType, List<FamilyMember> memberList){
-        Random randomizer = new Random()
-        FamilyMember random = memberList[randomizer.nextInt(memberList.size())]
-        if(!random){
-            throw new Exception("No Members in store")
-        }
-
-        if(!hasMatch(random.name,matchType)) {
-            return random.name
-        }
-
-        memberList.removeAll{ it.name == random.name } //remove already tested from list
-        findMatch(matchFor, matchType, memberList) //call findMatch until we find an unmatched name
-    }
+//    private String findMatch(String matchFor, MatchType matchType, List<FamilyMember> memberList){
+//        Random randomizer = new Random()
+//        FamilyMember random = memberList[randomizer.nextInt(memberList.size())]
+//        if(!random){
+//            throw new Exception("No Members in store")
+//        }
+//
+//        if(!hasMatch(random.name,matchType)) {
+//            return random.name
+//        }
+//
+//        memberList.removeAll{ it.name == random.name } //remove already tested from list
+//        findMatch(matchFor, matchType, memberList) //call findMatch until we find an unmatched name
+//    }
 
     /**
      * Check to see if there is a match for the name based on the type of match
-     * When MATCH_TYPE.GIVER then check to see if there is a matching RECEIVER
+     * When MatchType.GIVER then check to see if there is a matching RECEIVER
      *
      * @param matchName
      * @param matchType
      * @return
      */
-    private boolean hasMatch(String matchName, MATCH_TYPE matchType){
-        if(matchType == MATCH_TYPE.GIVER){
+    private boolean hasMatch(String matchName, MatchType matchType){
+        if(matchType == MatchType.GIVER){
             matchStore.hasReceiver(matchName)
         } else {
             matchStore.hasGiver(matchName)
@@ -73,8 +77,4 @@ class SecretSantaService {
 
     }
 
-    private enum MATCH_TYPE {
-        GIVER,
-        RECEIVER
-    }
 }

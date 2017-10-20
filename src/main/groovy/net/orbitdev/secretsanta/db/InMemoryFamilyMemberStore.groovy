@@ -1,4 +1,4 @@
-package net.orbitdev.secretsanta.net.orbitdev.secretsanta.db
+package net.orbitdev.secretsanta.db
 
 import net.orbitdev.secretsanta.domain.FamilyMember
 

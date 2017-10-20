@@ -2,8 +2,8 @@ package net.orbitdev.secretsanta.domain
 
 class FamilyMember {
 
+    int id
     String name
-    //net.orbitdev.secretsanta.domain.FamilyMember[] parents
-    //net.orbitdev.secretsanta.domain.FamilyMember[] children
+
 
 }
