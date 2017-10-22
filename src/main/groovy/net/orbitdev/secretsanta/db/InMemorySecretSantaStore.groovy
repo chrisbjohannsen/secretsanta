@@ -2,24 +2,35 @@ package net.orbitdev.secretsanta.db
 
 import net.orbitdev.secretsanta.domain.FamilyMember
 
+import java.util.concurrent.ConcurrentHashMap
+
 class InMemorySecretSantaStore implements ISecretSantaStore {
 
-    Map matches = [:]
+    ConcurrentHashMap matches = [:]
 
     @Override
     void addMatch(FamilyMember giver, FamilyMember receiver) {
-        if(!matches.containsKey(giver.name)){
-            matches.put(giver.name, receiver.name)
+        synchronized (matches){
+            if (!matches.containsKey(giver.name)) {
+                matches.put(giver.name, receiver.name)
+            }
         }
     }
 
+    /**
+     * True if the passed in name exists as a value in the store
+     */
+
     @Override
-    Boolean hasGiver(String receiver) {
+    Boolean isReceiver(String receiver) {
         return matches.containsValue(receiver)
     }
 
+    /**
+     * True if passed in name is a key in the store
+     */
     @Override
-    Boolean hasReceiver(String giver) {
+    Boolean isGiver(String giver) {
         return matches.containsKey(giver)
     }
 }

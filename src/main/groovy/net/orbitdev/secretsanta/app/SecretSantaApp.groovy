@@ -1,9 +1,9 @@
 package net.orbitdev.secretsanta.app
 
-import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.db.IFamilyMemberStore
 import net.orbitdev.secretsanta.db.InMemoryFamilyMemberStore
 import net.orbitdev.secretsanta.db.InMemorySecretSantaStore
+import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.engine.DefaultMatchEngine
 import net.orbitdev.secretsanta.engine.IMatchEngine
 import net.orbitdev.secretsanta.service.SecretSantaService
@@ -15,7 +15,8 @@ class SecretSantaApp {
 
         def familyMemberStore = fillInMemoryStore(1000, new InMemoryFamilyMemberStore())
         def secretSantaStore = new InMemorySecretSantaStore()
-        IMatchEngine engine = new DefaultMatchEngine()
+
+        IMatchEngine engine = new DefaultMatchEngine(secretSantaStore)
 
         def secretSantaService = new SecretSantaService(familyMemberStore, secretSantaStore, engine)
 
@@ -32,7 +33,7 @@ class SecretSantaApp {
 
     static IFamilyMemberStore fillInMemoryStore(int numberOfMembers, IFamilyMemberStore store) {
         (1..numberOfMembers).each {
-            store.addMember(new FamilyMember(name: "Member_${it}"))
+            store.addMember(new FamilyMember(id: it, name: "Member_${it}"))
         }
 
         assert store.members.size() == numberOfMembers

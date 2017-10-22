@@ -1,7 +1,7 @@
 package net.orbitdev.secretsanta.service
 
-import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.db.IFamilyMemberStore
+import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.engine.IMatchEngine
 import net.orbitdev.secretsanta.engine.MatchType
@@ -16,15 +16,21 @@ class SecretSantaService {
         this.familyMemberStore = familyStore
         this.matchStore = matchStore
         this.matchEngine = matchEngine
+
     }
 
     void generateMatches(){
         familyMemberStore.members.each{
+            def match
             if(!hasMatch(it.name, MatchType.GIVER)){
-                matchStore.addMatch(it, makeMatch(it, MatchType.RECEIVER))
+                match = makeMatch(it, MatchType.RECEIVER)
+                if(match)
+                    matchStore.addMatch(it, match)
             }
             if(!hasMatch(it.name, MatchType.RECEIVER)){
-                matchStore.addMatch(makeMatch(it,MatchType.GIVER),it)
+                match = makeMatch(it,MatchType.GIVER)
+                if(match)
+                    matchStore.addMatch(match,it)
             }
 
         }
@@ -39,26 +45,11 @@ class SecretSantaService {
      */
     private FamilyMember makeMatch(FamilyMember matchName, MatchType matchType) {
 
-        //clone members to help optimize randomizing
+        //clone members to help optimize selection algorithm
         def memberClone = familyMemberStore.getMembers().collect()
         memberClone.removeAll{ it.name == matchName.name } //remove self
         matchEngine.findMatch(matchName, matchType, memberClone)
     }
-
-//    private String findMatch(String matchFor, MatchType matchType, List<FamilyMember> memberList){
-//        Random randomizer = new Random()
-//        FamilyMember random = memberList[randomizer.nextInt(memberList.size())]
-//        if(!random){
-//            throw new Exception("No Members in store")
-//        }
-//
-//        if(!hasMatch(random.name,matchType)) {
-//            return random.name
-//        }
-//
-//        memberList.removeAll{ it.name == random.name } //remove already tested from list
-//        findMatch(matchFor, matchType, memberList) //call findMatch until we find an unmatched name
-//    }
 
     /**
      * Check to see if there is a match for the name based on the type of match
@@ -70,11 +61,10 @@ class SecretSantaService {
      */
     private boolean hasMatch(String matchName, MatchType matchType){
         if(matchType == MatchType.GIVER){
-            matchStore.hasReceiver(matchName)
+            matchStore.isGiver(matchName)
         } else {
-            matchStore.hasGiver(matchName)
+            matchStore.isReceiver(matchName)
         }
-
     }
 
 }
