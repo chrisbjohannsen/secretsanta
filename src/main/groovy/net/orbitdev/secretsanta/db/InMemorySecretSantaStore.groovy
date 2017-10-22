@@ -4,6 +4,10 @@ import net.orbitdev.secretsanta.domain.FamilyMember
 
 import java.util.concurrent.ConcurrentHashMap
 
+
+/**
+ * In memory, thread safe implmentation of ISecretSantaStore
+ */
 class InMemorySecretSantaStore implements ISecretSantaStore {
 
     ConcurrentHashMap matches = [:]
@@ -20,7 +24,6 @@ class InMemorySecretSantaStore implements ISecretSantaStore {
     /**
      * True if the passed in name exists as a value in the store
      */
-
     @Override
     Boolean isReceiver(String receiver) {
         return matches.containsValue(receiver)

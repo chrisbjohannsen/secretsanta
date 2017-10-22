@@ -6,10 +6,33 @@ import net.orbitdev.secretsanta.patterns.specification.Specification
 
 class DefaultMatchEngine implements IMatchEngine {
 
-    private Random random= new Random()
+    private Random random = new Random()
     private ISecretSantaStore store
+    private Specification<FamilyMember> hasReceiverSpec
+    private Specification<FamilyMember> hasGiverSpec
 
-    Specification<FamilyMember> getHasRecieverSpec() {
+    /**
+     * This class implments the matching algorithm.
+     * @param store
+     */
+    DefaultMatchEngine(ISecretSantaStore store) {
+        this.store = store
+    }
+
+    /**
+     * Constructor overload for testability
+     * @param store
+     * @param hasReceiverSpec
+     * @param hasGiverSpec
+     */
+    DefaultMatchEngine(ISecretSantaStore store, Specification<FamilyMember> hasReceiverSpec,
+                       Specification<FamilyMember> hasGiverSpec) {
+        this.store = store
+        this.hasReceiverSpec = hasReceiverSpec
+        this.hasGiverSpec = hasGiverSpec
+    }
+
+    Specification<FamilyMember> getHasReceiverSpec() {
         if(!hasReceiverSpec) {
             hasReceiverSpec = MatchSpecificationFactory.hasReceiver(store)
         }
@@ -22,19 +45,16 @@ class DefaultMatchEngine implements IMatchEngine {
         }
         return hasGiverSpec
     }
-    private Specification<FamilyMember> hasReceiverSpec
-    private Specification<FamilyMember> hasGiverSpec
 
-    DefaultMatchEngine(ISecretSantaStore store) {
-        this.store = store
-    }
-
-    DefaultMatchEngine(ISecretSantaStore store, Specification<FamilyMember> hasReceiverSpec, Specification<FamilyMember> hasGiverSpec) {
-        this.store = store
-        this.hasReceiverSpec = hasReceiverSpec
-        this.hasGiverSpec = hasGiverSpec
-    }
-
+    /**
+     * Picks a randomly selected family member from the list and validates the member against the santastore.
+     * If it is already matched, removed it from the list and call recursively until a match is made or the list is
+     * exhausted.
+     * @param matchFor
+     * @param matchType
+     * @param memberList
+     * @return
+     */
     @Override
     FamilyMember findMatch(FamilyMember matchFor, MatchType matchType, List<FamilyMember> memberList) {
 
@@ -52,7 +72,7 @@ class DefaultMatchEngine implements IMatchEngine {
 
             case MatchType.GIVER:
                 //validate that the randomly picked familyMember isn't already a receiver
-                if(! getHasRecieverSpec().isSatisfiedBy(familyMember) ){
+                if(! getHasReceiverSpec().isSatisfiedBy(familyMember) ){
                     return familyMember
                 }
                 break

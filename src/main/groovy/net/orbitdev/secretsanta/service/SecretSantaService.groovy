@@ -6,6 +6,9 @@ import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.engine.IMatchEngine
 import net.orbitdev.secretsanta.engine.MatchType
 
+/**
+ * Orchestrates the creation of matches and populates the santa store
+ */
 class SecretSantaService {
 
     private IFamilyMemberStore familyMemberStore
@@ -19,6 +22,10 @@ class SecretSantaService {
 
     }
 
+    /**
+     * Iterates the family store members and generate both giver and receiver matches for each
+     * optimized by not calling the match making code if a match is already made
+     */
     void generateMatches(){
         familyMemberStore.members.each{
             def match
@@ -54,7 +61,6 @@ class SecretSantaService {
     /**
      * Check to see if there is a match for the name based on the type of match
      * When MatchType.GIVER then check to see if there is a matching RECEIVER
-     *
      * @param matchName
      * @param matchType
      * @return
