@@ -1,6 +1,7 @@
 package net.orbitdev.secretsanta.db
 
 import net.orbitdev.secretsanta.domain.FamilyMember
+import net.orbitdev.secretsanta.domain.SecretSantaMatch
 
 import java.util.concurrent.ConcurrentHashMap
 
@@ -35,5 +36,10 @@ class InMemorySecretSantaStore implements ISecretSantaStore {
     @Override
     Boolean isGiver(String giver) {
         return matches.containsKey(giver)
+    }
+
+    @Override
+    SecretSantaMatch[] getMatches(int memberId) {
+        return null
     }
 }
