@@ -1,7 +1,10 @@
-package net.orbitdev.secretsanta.net.orbitdev.secretsanta.db
+package net.orbitdev.secretsanta.db
 
 import net.orbitdev.secretsanta.domain.FamilyMember
 
+/**
+ * In memory, non duplicate implementation of the IFamilyMemberStore
+ */
 class InMemoryFamilyMemberStore implements IFamilyMemberStore {
 
     //use a Set to prevent duplicates

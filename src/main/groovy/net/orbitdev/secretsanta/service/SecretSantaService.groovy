@@ -1,26 +1,43 @@
 package net.orbitdev.secretsanta.service
 
+import net.orbitdev.secretsanta.db.IFamilyMemberStore
+import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.domain.FamilyMember
-import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.ISecretSantaStore
-import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.IFamilyMemberStore
+import net.orbitdev.secretsanta.engine.IMatchEngine
+import net.orbitdev.secretsanta.engine.MatchType
 
+/**
+ * Orchestrates the creation of matches and populates the santa store
+ */
 class SecretSantaService {
 
     private IFamilyMemberStore familyMemberStore
     private ISecretSantaStore matchStore
+    private IMatchEngine matchEngine
 
-    SecretSantaService(IFamilyMemberStore familyStore, ISecretSantaStore matchStore) {
+    SecretSantaService(IFamilyMemberStore familyStore, ISecretSantaStore matchStore, IMatchEngine matchEngine) {
         this.familyMemberStore = familyStore
         this.matchStore = matchStore
+        this.matchEngine = matchEngine
+
     }
 
+    /**
+     * Iterates the family store members and generate both giver and receiver matches for each
+     * optimized by not calling the match making code if a match is already made
+     */
     void generateMatches(){
         familyMemberStore.members.each{
-            if(!hasMatch(it.name, MATCH_TYPE.GIVER)){
-                matchStore.addMatch(it.name, makeMatch(it.name, MATCH_TYPE.RECEIVER))
+            def match
+            if(!hasMatch(it.name, MatchType.GIVER)){
+                match = makeMatch(it, MatchType.RECEIVER)
+                if(match)
+                    matchStore.addMatch(it, match)
             }
-            if(!hasMatch(it.name, MATCH_TYPE.RECEIVER)){
-                matchStore.addMatch(makeMatch(it.name,MATCH_TYPE.GIVER),it.name)
+            if(!hasMatch(it.name, MatchType.RECEIVER)){
+                match = makeMatch(it,MatchType.GIVER)
+                if(match)
+                    matchStore.addMatch(match,it)
             }
 
         }
@@ -33,48 +50,27 @@ class SecretSantaService {
      * @param matchName
      * @return name of the match
      */
-    private String makeMatch(String matchName, MATCH_TYPE matchType) {
+    private FamilyMember makeMatch(FamilyMember matchName, MatchType matchType) {
 
-        //clone members to help optimize randomizing
+        //clone members to help optimize selection algorithm
         def memberClone = familyMemberStore.getMembers().collect()
-        memberClone.removeAll{ it.name == matchName } //remove self
-        findMatch(matchName, matchType, memberClone)
-    }
-
-    private String findMatch(String matchFor, MATCH_TYPE matchType, List<FamilyMember> memberList){
-        Random randomizer = new Random()
-        FamilyMember random = memberList[randomizer.nextInt(memberList.size())]
-        if(!random){
-            throw new Exception("No Members in store")
-        }
-
-        if(!hasMatch(random.name,matchType)) {
-            return random.name
-        }
-
-        memberList.removeAll{ it.name == random.name } //remove already tested from list
-        findMatch(matchFor, matchType, memberList) //call findMatch until we find an unmatched name
+        memberClone.removeAll{ it.name == matchName.name } //remove self
+        matchEngine.findMatch(matchName, matchType, memberClone)
     }
 
     /**
      * Check to see if there is a match for the name based on the type of match
-     * When MATCH_TYPE.GIVER then check to see if there is a matching RECEIVER
-     *
+     * When MatchType.GIVER then check to see if there is a matching RECEIVER
      * @param matchName
      * @param matchType
      * @return
      */
-    private boolean hasMatch(String matchName, MATCH_TYPE matchType){
-        if(matchType == MATCH_TYPE.GIVER){
-            matchStore.hasReceiver(matchName)
+    private boolean hasMatch(String matchName, MatchType matchType){
+        if(matchType == MatchType.GIVER){
+            matchStore.isGiver(matchName)
         } else {
-            matchStore.hasGiver(matchName)
+            matchStore.isReceiver(matchName)
         }
-
     }
 
-    private enum MATCH_TYPE {
-        GIVER,
-        RECEIVER
-    }
 }

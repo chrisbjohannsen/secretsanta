@@ -1,16 +1,23 @@
 package net.orbitdev.secretsanta.service
 
 import net.orbitdev.secretsanta.domain.FamilyMember
-import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.IFamilyMemberStore
-import net.orbitdev.secretsanta.net.orbitdev.secretsanta.db.ISecretSantaStore
+import net.orbitdev.secretsanta.db.IFamilyMemberStore
+import net.orbitdev.secretsanta.db.ISecretSantaStore
+import net.orbitdev.secretsanta.engine.IMatchEngine
+import net.orbitdev.secretsanta.engine.MatchType
+import spock.lang.Shared
 import spock.lang.Specification
 
-class SecretSantaServiceTest extends Specification {
+class SecretSantaServiceSpec extends Specification {
 
     SecretSantaService service
     IFamilyMemberStore familyStore
     ISecretSantaStore santaStore
+    IMatchEngine engine
+
+    @Shared
     FamilyMember[] members
+
 
     void setup() {
         members = [
@@ -33,7 +40,8 @@ class SecretSantaServiceTest extends Specification {
         }
 
         santaStore = Mock(ISecretSantaStore)
-        service = new SecretSantaService(familyStore, santaStore)
+        engine = Mock(IMatchEngine)
+        service = new SecretSantaService(familyStore, santaStore, engine)
     }
 
     void "constructor sets up the service"() {
@@ -47,69 +55,36 @@ class SecretSantaServiceTest extends Specification {
         def name = 'Dennis'
 
         when:
-        service.hasMatch(name, SecretSantaService.MATCH_TYPE.GIVER)
+        service.hasMatch(name, MatchType.GIVER)
 
         then:
-        1 * santaStore.hasReceiver(name)
+        1 * santaStore.isGiver(name)
 
         when:
-        service.hasMatch(name, SecretSantaService.MATCH_TYPE.RECEIVER)
+        service.hasMatch(name, MatchType.RECEIVER)
 
         then:
-        1 * santaStore.hasGiver(name)
+        1 * santaStore.isReceiver(name)
     }
 
     void "match cannot be self"() {
 
         expect:
-        assert service.makeMatch(name,SecretSantaService.MATCH_TYPE.GIVER) != name
-        assert service.makeMatch(name,SecretSantaService.MATCH_TYPE.RECEIVER) != name
+        assert service.makeMatch(member,MatchType.GIVER) != member
+        assert service.makeMatch(member,MatchType.RECEIVER) != member
 
         where:
-        name << [
-                'Chris',
-                'Randi',
-                'Johnny',
-                'Cory',
-                'Erin',
-                'Ron',
-                'Susan'
-        ]
+        member << members
 
     }
 
-    void "matches get stored in santa store"() {
+    void "all members are checked for both match types matched"() {
         when:
         service.generateMatches()
 
         then:
-        16 * santaStore.addMatch(_,_)
-
+        members.size() * engine.findMatch(_,MatchType.RECEIVER,_)
+        members.size() * engine.findMatch(_,MatchType.GIVER,_)
     }
 
-    void "handles 0 family members"(){
-        setup:
-        members = []
-
-        when:
-        service.generateMatches()
-
-        then:
-        thrown(Exception)
-    }
-
-    void "handles null family member"(){
-        setup:
-        def fstore = Mock(IFamilyMemberStore)
-        fstore.getMembers()>> members
-        fstore.getRandomMember() >> null
-
-        def sservice = new SecretSantaService(fstore,santaStore)
-
-        when:
-        sservice.generateMatches()
-
-        then:
-        thrown(Exception)
-    }
 }
