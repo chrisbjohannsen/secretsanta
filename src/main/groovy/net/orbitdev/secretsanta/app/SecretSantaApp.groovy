@@ -39,11 +39,17 @@ class SecretSantaApp {
 
         println "${secretSantaStore.matches.size()} matches"
         secretSantaStore.matches.each { key, value ->
-            println "Giver : ${key} \t Receiver : ${value}"
 
+            assert value.size() == 2
             assert secretSantaStore.matches.keySet().count { it == key } == 1
-            assert secretSantaStore.matches.values().count { it == key } == 1
+
+            println "FamilyMember : ${key} - Record Count ${value.size()}"
+            value.each {
+                println "${it.toString()}"
+            }
         }
+
+
     }
 
     static IFamilyMemberStore fillInMemoryStore(int numberOfMembers, IFamilyMemberStore store) {

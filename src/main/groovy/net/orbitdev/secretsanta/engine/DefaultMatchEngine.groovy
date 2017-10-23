@@ -10,8 +10,6 @@ class DefaultMatchEngine implements IMatchEngine {
     private ISecretSantaStore store
     private Specification<FamilyMember> hasReceiverSpec
     private Specification<FamilyMember> hasGiverSpec
-    private Specification<FamilyMember> lastReceivedTimeLimitExpiredSpec
-    private Specification<FamilyMember> lastGivenTimeLimitExpiredSpec
 
     /**
      * This class implments the matching algorithm.
@@ -28,11 +26,7 @@ class DefaultMatchEngine implements IMatchEngine {
      * @param hasGiverSpec
      */
     DefaultMatchEngine(ISecretSantaStore store, Specification<FamilyMember> hasReceiverSpec,
-                       Specification<FamilyMember> hasGiverSpec,
-                       Specification<FamilyMember> lastReceivedTimeLimitExpiredSpec,
-                       Specification<FamilyMember> lastGivenTimeLimitExpiredSpec) {
-        this.lastGivenTimeLimitExpiredSpec = lastGivenTimeLimitExpiredSpec
-        this.lastReceivedTimeLimitExpiredSpec = lastReceivedTimeLimitExpiredSpec
+                       Specification<FamilyMember> hasGiverSpec) {
         this.store = store
         this.hasReceiverSpec = hasReceiverSpec
         this.hasGiverSpec = hasGiverSpec

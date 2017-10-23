@@ -23,14 +23,11 @@ class DefaultMatchEngineSpec extends Specification {
         store = Mock(ISecretSantaStore)
         giverSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
         receiverSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
-
         timeLimitSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
-        timeLimitSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
-
         members = SpecificationTestUtils.mockFamilyMembers()
         storeData = SpecificationTestUtils.mockSecretSantaMatchesData()
 
-        engine = new DefaultMatchEngine(store, receiverSpec, giverSpec, timeLimitSpec, timeLimitSpec)
+        engine = new DefaultMatchEngine(store, receiverSpec, giverSpec)
     }
 
     def "return a familyMember when no giver match found"() {

@@ -39,7 +39,7 @@ class SecretSantaServiceSpec extends Specification {
             return null
         }
 
-        santaStore = Mock(ISecretSantaStore)
+        santaStore = Mock(ISecretSantaStore)gst
         engine = Mock(IMatchEngine)
         service = new SecretSantaService(familyStore, santaStore, engine)
     }
@@ -52,19 +52,19 @@ class SecretSantaServiceSpec extends Specification {
 
     void "checks to see if member already matched"() {
         setup:
-        def name = 'Dennis'
+        def member = new FamilyMember(id:0,name:'Dennis')
 
         when:
-        service.hasMatch(name, MatchType.GIVER)
+        service.hasMatch(member, MatchType.GIVER)
 
         then:
-        1 * santaStore.isGiver(name)
+        1 * santaStore.isGiver(member)
 
         when:
-        service.hasMatch(name, MatchType.RECEIVER)
+        service.hasMatch(member, MatchType.RECEIVER)
 
         then:
-        1 * santaStore.isReceiver(name)
+        1 * santaStore.isReceiver(member)
     }
 
     void "match cannot be self"() {
@@ -83,8 +83,8 @@ class SecretSantaServiceSpec extends Specification {
         service.generateMatches()
 
         then:
-        members.size() * engine.findMatch(_,MatchType.RECEIVER,_)
-        members.size() * engine.findMatch(_,MatchType.GIVER,_)
+        members.size() * engine.findMatch(_,MatchType.RECEIVER,_,_)
+        members.size() * engine.findMatch(_,MatchType.GIVER,_,_)
     }
 
 }

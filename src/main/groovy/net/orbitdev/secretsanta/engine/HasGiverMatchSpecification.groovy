@@ -17,6 +17,6 @@ class HasGiverMatchSpecification extends CompositeSpecification<FamilyMember> {
 
     @Override
     boolean isSatisfiedBy(FamilyMember familyMember) {
-        return matchStore.isReceiver(familyMember.name)
+        return matchStore.isReceiver(familyMember)
     }
 }

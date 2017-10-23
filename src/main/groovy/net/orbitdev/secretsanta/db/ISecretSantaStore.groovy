@@ -9,7 +9,7 @@ import net.orbitdev.secretsanta.domain.SecretSantaMatch
 interface ISecretSantaStore {
 
     void addMatch(FamilyMember giver, FamilyMember receiver)
-    Boolean isReceiver(String receiver)
-    Boolean isGiver(String giver)
+    Boolean isReceiver(FamilyMember receiver)
+    Boolean isGiver(FamilyMember giver)
     SecretSantaMatch[] getMatches(int memberId)
 }
