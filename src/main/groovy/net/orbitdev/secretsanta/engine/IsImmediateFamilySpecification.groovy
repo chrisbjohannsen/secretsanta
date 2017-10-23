@@ -12,6 +12,9 @@ class IsImmediateFamilySpecification extends CompositeSpecification<FamilyMember
 
     @Override
     boolean isSatisfiedBy(FamilyMember familyMember) {
+        if(target.immediateFamily.values().find{ it.id == familyMember.id }){
+            return true
+        }
         return false
     }
 }

@@ -6,5 +6,5 @@ package net.orbitdev.secretsanta.domain
 class FamilyMember {
     int id
     String name
-    Map<String, FamilyMember> immediateFamily
+    Map<String, FamilyMember> immediateFamily = [:]
 }

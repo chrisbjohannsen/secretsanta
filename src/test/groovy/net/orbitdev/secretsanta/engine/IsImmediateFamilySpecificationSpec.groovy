@@ -8,21 +8,16 @@ import spock.lang.Specification
 class IsImmediateFamilySpecificationSpec extends Specification {
 
     @Shared
-    FamilyMember[] family
+    FamilyMember[] family= SpecificationTestUtils.mockFamilyMembers()
     IsImmediateFamilySpecification spec
 
     void setup() {
-
-        family = SpecificationTestUtils.mockFamilyMembers()
         spec = new IsImmediateFamilySpecification(family[2]) //Ross
     }
 
     def "returns false if not in immediate family"() {
-        setup:
-        family = SpecificationTestUtils.mockFamilyMembers()
-
         expect:
-        spec.isSatisfiedBy(input) == false
+        !spec.isSatisfiedBy(input)
 
         where:
         input << [
@@ -33,6 +28,18 @@ class IsImmediateFamilySpecificationSpec extends Specification {
         family[7],
         family[8],
         family[9]]
+
+    }
+    def "returns true when is an in immediate family"() {
+        expect:
+        spec.isSatisfiedBy(input)
+
+        where:
+        input << [
+        family[0],
+        family[10],
+        family[11]
+        ]
 
     }
 }
