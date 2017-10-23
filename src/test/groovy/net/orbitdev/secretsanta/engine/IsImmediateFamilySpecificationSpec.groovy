@@ -30,6 +30,7 @@ class IsImmediateFamilySpecificationSpec extends Specification {
         family[9]]
 
     }
+
     def "returns true when is an in immediate family"() {
         expect:
         spec.isSatisfiedBy(input)

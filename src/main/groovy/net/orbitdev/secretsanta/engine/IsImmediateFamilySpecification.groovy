@@ -12,7 +12,7 @@ class IsImmediateFamilySpecification extends CompositeSpecification<FamilyMember
 
     @Override
     boolean isSatisfiedBy(FamilyMember familyMember) {
-        if(target.immediateFamily.values().find{ it.id == familyMember.id }){
+        if(target.immediateFamily.keySet().find{ it.id == familyMember.id }){
             return true
         }
         return false

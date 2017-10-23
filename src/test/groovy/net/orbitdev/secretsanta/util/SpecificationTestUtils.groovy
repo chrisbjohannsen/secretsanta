@@ -71,41 +71,41 @@ class SpecificationTestUtils {
 
         ]
 
-        members[0].immediateFamily.put('spouse', members[2])
-        members[0].immediateFamily.put('child', members[10])
-        members[0].immediateFamily.put('child', members[11])
-        members[0].immediateFamily.put('parent', members[8])
+        members[0].immediateFamily.put(members[2], 'spouse')
+        members[0].immediateFamily.put(members[10], 'child')
+        members[0].immediateFamily.put(members[11], 'child')
+        members[0].immediateFamily.put(members[8], 'parent')
 
-        members[1].immediateFamily.put('spouse', members[4])
-        members[1].immediateFamily.put('child', members[3])
+        members[1].immediateFamily.put(members[4], 'spouse')
+        members[1].immediateFamily.put(members[3], 'child')
 
-        members[2].immediateFamily.put('spouse', members[0])
-        members[2].immediateFamily.put('child', members[10])
-        members[2].immediateFamily.put('child', members[11])
+        members[2].immediateFamily.put(members[0], 'spouse')
+        members[2].immediateFamily.put(members[10], 'child')
+        members[2].immediateFamily.put(members[11], 'child')
 
-        members[3].immediateFamily.put('parent', members[1])
-        members[3].immediateFamily.put('parent', members[4])
+        members[3].immediateFamily.put(members[1], 'parent')
+        members[3].immediateFamily.put(members[4], 'parent')
 
-        members[4].immediateFamily.put('child', members[3])
-        members[4].immediateFamily.put('spouse', members[1])
-        members[4].immediateFamily.put('spouse', members[6])
+        members[4].immediateFamily.put(members[3], 'child')
+        members[4].immediateFamily.put(members[1], 'spouse')
+        members[4].immediateFamily.put(members[6], 'spouse')
 
-        members[5].immediateFamily.put('spouse', members[7])
+        members[5].immediateFamily.put(members[7], 'spouse')
 
-        members[6].immediateFamily.put('spouse', members[4])
+        members[6].immediateFamily.put(members[4], 'spouse')
 
-        members[7].immediateFamily.put('spouse', members[5])
+        members[7].immediateFamily.put(members[5], 'spouse')
 
-        members[8].immediateFamily.put('child', members[0])
-        members[8].immediateFamily.put('parent', members[9])
+        members[8].immediateFamily.put(members[0], 'child')
+        members[8].immediateFamily.put(members[9], 'parent')
 
-        members[9].immediateFamily.put('child', members[8])
+        members[9].immediateFamily.put(members[8], 'child')
 
-        members[10].immediateFamily.put('parent', members[0])
-        members[10].immediateFamily.put('parent', members[2])
+        members[10].immediateFamily.put(members[0], 'parent')
+        members[10].immediateFamily.put(members[2], 'parent')
 
-        members[11].immediateFamily.put('parent', members[2])
-        members[11].immediateFamily.put('parent', members[0])
+        members[11].immediateFamily.put(members[2], 'parent')
+        members[11].immediateFamily.put(members[0], 'parent')
 
         members
     }
