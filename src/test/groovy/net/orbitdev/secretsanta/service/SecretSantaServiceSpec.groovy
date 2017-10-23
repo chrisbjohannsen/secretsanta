@@ -39,7 +39,7 @@ class SecretSantaServiceSpec extends Specification {
             return null
         }
 
-        santaStore = Mock(ISecretSantaStore)gst
+        santaStore = Mock(ISecretSantaStore)
         engine = Mock(IMatchEngine)
         service = new SecretSantaService(familyStore, santaStore, engine)
     }
@@ -83,8 +83,8 @@ class SecretSantaServiceSpec extends Specification {
         service.generateMatches()
 
         then:
-        members.size() * engine.findMatch(_,MatchType.RECEIVER,_,_)
-        members.size() * engine.findMatch(_,MatchType.GIVER,_,_)
+        members.size() * engine.findMatch(_,MatchType.RECEIVER,_,_,_)
+        members.size() * engine.findMatch(_,MatchType.GIVER,_,_,_)
     }
 
 }
