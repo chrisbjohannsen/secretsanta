@@ -8,6 +8,9 @@ import net.orbitdev.secretsanta.patterns.specification.Specification
  */
 interface IMatchEngine {
 
-    FamilyMember findMatch(FamilyMember matchFor, MatchType matchType,
-                           List<FamilyMember> memberList, Specification<FamilyMember> timeLimitSpec)
+    FamilyMember findMatch(FamilyMember matchFor,
+                           MatchType matchType,
+                           List<FamilyMember> memberList,
+                           Specification<FamilyMember> timeLimitSpec,
+                           Specification<FamilyMember> isFamilyMemberSpec)
 }

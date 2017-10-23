@@ -28,24 +28,29 @@ class SecretSantaApp {
      */
     static void main(args) {
 
-        def familyMemberStore = fillInMemoryStore(1000, new InMemoryFamilyMemberStore())
+        def familyMemberStore = createFamilyRelationships(fillInMemoryStore(2500, new InMemoryFamilyMemberStore()))
+
         def secretSantaStore = new InMemorySecretSantaStore()
 
         IMatchEngine engine = new DefaultMatchEngine(secretSantaStore)
 
         def secretSantaService = new SecretSantaService(familyMemberStore, secretSantaStore, engine)
 
+        def start = System.currentTimeMillis()
+        println "*** start generating matches ***"
         secretSantaService.generateMatches()
+        def end = System.currentTimeMillis()
+        println "*** ${secretSantaStore.matches.size()} matches generated in ${end - start}ms***"
 
-        println "${secretSantaStore.matches.size()} matches"
         secretSantaStore.matches.each { key, value ->
 
             assert value.size() == 2
             assert secretSantaStore.matches.keySet().count { it == key } == 1
 
-            println "FamilyMember : ${key} - Record Count ${value.size()}"
+
+//            println "FamilyMember : ${key} - Record Count ${value.size()}"
             value.each {
-                println "${it.toString()}"
+                assert !it.giver.immediateFamily.keySet().contains(it.receiver.id)
             }
         }
 
@@ -58,6 +63,31 @@ class SecretSantaApp {
         }
 
         assert store.members.size() == numberOfMembers
+        store
+    }
+
+    static IFamilyMemberStore createFamilyRelationships(IFamilyMemberStore store){
+        int iterations = store.members.size()/20
+        int iterationCount = 1
+
+        def membersList = store.members.toList()
+
+        for(iterationCount; iterationCount <= iterations; iterationCount ++){
+
+            def batch = membersList.subList(iterationCount,iterationCount+5)
+            batch[0].immediateFamily.put(batch[1],'spouse')
+            batch[1].immediateFamily.put(batch[0],'spouse')
+            batch[0].immediateFamily.put(batch[2],'parent')
+            batch[2].immediateFamily.put(batch[0],'child')
+            batch[0].immediateFamily.put(batch[3],'child')
+            batch[1].immediateFamily.put(batch[3],'child')
+            batch[3].immediateFamily.put(batch[0],'parent')
+            batch[3].immediateFamily.put(batch[1],'parent')
+            batch[1].immediateFamily.put(batch[4],'parent')
+            batch[4].immediateFamily.put(batch[1],'child')
+        }
+
+        println "family store created"
         store
     }
 }

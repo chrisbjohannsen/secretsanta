@@ -4,6 +4,7 @@ import net.orbitdev.secretsanta.db.IFamilyMemberStore
 import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.engine.IMatchEngine
+import net.orbitdev.secretsanta.engine.IsImmediateFamilySpecification
 import net.orbitdev.secretsanta.engine.LastGiverMatchThreeYearsOrGreaterSpecification
 import net.orbitdev.secretsanta.engine.LastReceiverMatchThreeYearsOrGreaterSpecification
 import net.orbitdev.secretsanta.engine.MatchType
@@ -65,7 +66,9 @@ class SecretSantaService {
                 new LastReceiverMatchThreeYearsOrGreaterSpecification(matchStore, targetMember) :
                 new LastGiverMatchThreeYearsOrGreaterSpecification(matchStore, targetMember)
 
-        matchEngine.findMatch(targetMember, matchType, memberClone, timeLimitSpec)
+        Specification<FamilyMember> isFamilyMemberSpec = new IsImmediateFamilySpecification(targetMember)
+
+        matchEngine.findMatch(targetMember, matchType, memberClone, timeLimitSpec, isFamilyMemberSpec)
     }
 
     /**

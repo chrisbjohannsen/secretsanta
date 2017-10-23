@@ -59,7 +59,8 @@ class DefaultMatchEngine implements IMatchEngine {
     FamilyMember findMatch(FamilyMember matchFor,
                            MatchType matchType, //TODO: Refactor so consumer injects an "availabilitySpec" so we can remove the dependency on MatchType
                            List<FamilyMember> memberList,
-                           Specification<FamilyMember> timeLimitSpec) {
+                           Specification<FamilyMember> timeLimitSpec, //TODO: Simplify the spec injection. Should be able to construct composite to be injected
+                           Specification<FamilyMember> isFamilyMemberSpec) {
 
         if (memberList.size() == 0) {
             return null
@@ -74,19 +75,23 @@ class DefaultMatchEngine implements IMatchEngine {
         switch (matchType) {
             case MatchType.GIVER:
                 //validate that the randomly picked familyMember isn't already a receiver
-                if ((!getHasReceiverSpec().isSatisfiedBy(familyMember)).and(timeLimitSpec.isSatisfiedBy(matchFor))) {
+                if (!getHasReceiverSpec().isSatisfiedBy(familyMember)
+                        && timeLimitSpec.isSatisfiedBy(matchFor)
+                        && !isFamilyMemberSpec.isSatisfiedBy(familyMember)) {
                     return familyMember
                 }
                 break
 
             case MatchType.RECEIVER:
-                if ((!getHasGiverSpec().isSatisfiedBy(familyMember)).and(timeLimitSpec.isSatisfiedBy(familyMember))) {
+                if (!getHasGiverSpec().isSatisfiedBy(familyMember)
+                        && timeLimitSpec.isSatisfiedBy(familyMember)
+                        && !isFamilyMemberSpec.isSatisfiedBy(familyMember)) {
                     return familyMember
                 }
                 break
         }
 
         memberList.removeAll { it.id == familyMember.id } //remove already tested from list
-        findMatch(matchFor, matchType, memberList, timeLimitSpec) //call findMatch until we find an unmatched name
+        findMatch(matchFor, matchType, memberList, timeLimitSpec, isFamilyMemberSpec) //call findMatch until we find an unmatched name
     }
 }

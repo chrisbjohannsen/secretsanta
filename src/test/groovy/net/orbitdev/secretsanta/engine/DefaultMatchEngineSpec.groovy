@@ -14,6 +14,7 @@ class DefaultMatchEngineSpec extends Specification {
     MatchSpec<FamilyMember> receiverSpec
     ISecretSantaStore store
     MatchSpec<FamilyMember> timeLimitSpec
+    MatchSpec<FamilyMember> isFamilyMemberSpec
 
     @Shared
     def members = []
@@ -24,6 +25,7 @@ class DefaultMatchEngineSpec extends Specification {
         giverSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
         receiverSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
         timeLimitSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
+        isFamilyMemberSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
         members = SpecificationTestUtils.mockFamilyMembers()
         storeData = SpecificationTestUtils.mockSecretSantaMatchesData()
 
@@ -37,7 +39,7 @@ class DefaultMatchEngineSpec extends Specification {
         timeLimitSpec.isSatisfiedBy(_) >> true
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
 
         then:
         result instanceof FamilyMember
@@ -51,7 +53,7 @@ class DefaultMatchEngineSpec extends Specification {
         store.getMatches(5) >> null
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
 
         then:
         result instanceof FamilyMember
@@ -65,7 +67,7 @@ class DefaultMatchEngineSpec extends Specification {
         timeLimitSpec.isSatisfiedBy(_) >> true
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
 
         then:
         result == null
@@ -78,7 +80,7 @@ class DefaultMatchEngineSpec extends Specification {
         timeLimitSpec.isSatisfiedBy(_) >> true
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
 
         then:
         result == null
@@ -91,7 +93,7 @@ class DefaultMatchEngineSpec extends Specification {
         timeLimitSpec.isSatisfiedBy(_) >> false
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
 
         then:
         result == null
@@ -104,9 +106,10 @@ class DefaultMatchEngineSpec extends Specification {
         timeLimitSpec.isSatisfiedBy(_) >> false
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
 
         then:
         result == null
     }
+
 }
