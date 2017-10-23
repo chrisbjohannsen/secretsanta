@@ -11,7 +11,7 @@ class SpecificationTestUtils {
 
     static Map mockSecretSantaMatchesData() {
         def members = mockFamilyMembers()
-        def member  = members[0]
+        def member = members[0]
         def member1 = members[1]
         def member2 = members[2]
         def member3 = members[3]
@@ -55,14 +55,46 @@ class SpecificationTestUtils {
         matches
     }
 
-    static  mockFamilyMembers(){
-        return [new FamilyMember(id: 0, name: 'Demelza'),
-                new FamilyMember(id: 1, name: 'Francis'),
-                new FamilyMember(id: 2, name: 'Ross'),
-                new FamilyMember(id: 3, name: 'Henry-Charles'),
-                new FamilyMember(id: 4, name: 'Elizabeth'),
-                new FamilyMember(id: 5, name: 'Ennis'),
-                new FamilyMember(id: 6, name: 'George'),
-                new FamilyMember(id: 7, name: 'Caroline')]
+    static mockFamilyMembers() {
+        def members = [new FamilyMember(id: 0, name: 'Demelza Poldark'),
+                       new FamilyMember(id: 1, name: 'Francis Poldark'),
+                       new FamilyMember(id: 2, name: 'Ross Poldark'),
+                       new FamilyMember(id: 3, name: 'Geoffery-Charles Poldark'),
+                       new FamilyMember(id: 4, name: 'Elizabeth Warleggan'),
+                       new FamilyMember(id: 5, name: 'Dwight Enys'),
+                       new FamilyMember(id: 6, name: 'George Warleggan'),
+                       new FamilyMember(id: 7, name: 'Caroline Penvenen'),
+                       new FamilyMember(id: 8, name: 'Tom Carne'),
+                       new FamilyMember(id: 9, name: 'Drake Carne'),
+                       new FamilyMember(id: 10, name: 'Julia Poldark'),
+                       new FamilyMember(id: 11, name: 'Jeremy Poldark')
+
+        ]
+
+        members[0].immediateFamily.put('spouse', members[2])
+        members[2].immediateFamily.put('spouse', members[0])
+        members[1].immediateFamily.put('spouse', members[4])
+        members[4].immediateFamily.put('spouse', members[1])
+        members[4].immediateFamily.put('spouse', members[6])
+        members[6].immediateFamily.put('spouse', members[4])
+        members[5].immediateFamily.put('spouse', members[7])
+        members[7].immediateFamily.put('spouse', members[5])
+        members[1].immediateFamily.put('child', members[3])
+        members[3].immediateFamily.put('parent', members[1])
+        members[3].immediateFamily.put('parent', members[4])
+        members[4].immediateFamily.put('child', members[3])
+        members[8].immediateFamily.put('child', members[0])
+        members[0].immediateFamily.put('parent', members[8])
+        members[8].immediateFamily.put('parent', members[9])
+        members[9].immediateFamily.put('child', members[8])
+        members[10].immediateFamily.put('parent', members[0])
+        members[11].immediateFamily.put('parent', members[0])
+        members[10].immediateFamily.put('parent', members[2])
+        members[11].immediateFamily.put('parent', members[2])
+        members[2].immediateFamily.put('child', members[10])
+        members[2].immediateFamily.put('child', members[11])
+        members[0].immediateFamily.put('child', members[10])
+        members[0].immediateFamily.put('child', members[11])
+        members
     }
 }
