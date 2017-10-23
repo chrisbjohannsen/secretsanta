@@ -17,12 +17,14 @@ class LastGiverMatchThreeYearsOrGreaterSpecification extends CompositeSpecificat
 
     private Specification<FamilyMember> lastReceivedSpec
     private ISecretSantaStore store
+    private FamilyMember toMatch
 
     LastGiverMatchThreeYearsOrGreaterSpecification(Specification<FamilyMember> lastReceivedSpec) {
         this.lastReceivedSpec = lastReceivedSpec
     }
 
-    LastGiverMatchThreeYearsOrGreaterSpecification(ISecretSantaStore store) {
+    LastGiverMatchThreeYearsOrGreaterSpecification(ISecretSantaStore store, FamilyMember toMatch) {
+        this.toMatch = toMatch
         this.store = store
     }
 
@@ -30,12 +32,12 @@ class LastGiverMatchThreeYearsOrGreaterSpecification extends CompositeSpecificat
     boolean isSatisfiedBy(FamilyMember familyMember) {
 
         SecretSantaMatch[] matches = this.store.getMatches(familyMember.id)
-        SecretSantaMatch giverMatch = matches.find{ it.giver.id == familyMember.id }
-        if(giverMatch){
-            ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC)
+        SecretSantaMatch giverMatch = matches?.sort{ it.matchDate }?.reverse() //sort by matchDate desc
+                .find{ it.giver.id == familyMember.id && it.receiver.id == toMatch.id } //return the first match
 
-            return ChronoUnit.YEARS.between(giverMatch.matchDate, now) >= 3
+        if(giverMatch){
+            return ChronoUnit.YEARS.between(giverMatch.matchDate, ZonedDateTime.now(ZoneOffset.UTC)) >= 3
         }
-        return false
+        return true
     }
 }

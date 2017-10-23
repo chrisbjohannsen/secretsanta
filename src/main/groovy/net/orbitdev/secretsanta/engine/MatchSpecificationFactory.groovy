@@ -31,8 +31,29 @@ class MatchSpecificationFactory {
     /**
      * creates a composite specification to evaluate whether FamilyMembers have been matched to recently
      */
-    static Specification<FamilyMember> timeLimitExpired(ISecretSantaStore store){
-        return new LastGiverMatchThreeYearsOrGreaterSpecification(store)
-                .and(new LastReceiverMatchThreeYearsOrGreaterSpecification(store))
+    static Specification<FamilyMember> timeLimitExpired(ISecretSantaStore store, FamilyMember member){
+        return new LastGiverMatchThreeYearsOrGreaterSpecification(store, member)
+                .and(new LastReceiverMatchThreeYearsOrGreaterSpecification(store, member))
     }
+
+    /**
+     * create a LastGiverMatchThreeYearsOrGreaterSpecification
+     * @param store
+     * @param member
+     * @return
+     */
+    static Specification<FamilyMember> timeLimitAsGiverExpired(ISecretSantaStore store, FamilyMember member){
+        return new LastGiverMatchThreeYearsOrGreaterSpecification(store, member)
+    }
+
+    /**
+     * create a LastReceiverMatchThreeYearsOrGreaterSpecification
+     * @param store
+     * @param member
+     * @return
+     */
+    static Specification<FamilyMember> timeLimitAsReceiverExpired(ISecretSantaStore store, FamilyMember member){
+        return new LastReceiverMatchThreeYearsOrGreaterSpecification(store, member)
+    }
+
 }

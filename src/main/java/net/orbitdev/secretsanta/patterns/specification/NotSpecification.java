@@ -10,6 +10,7 @@ public class NotSpecification<T> extends CompositeSpecification<T> {
 
     @Override
     public boolean isSatisfiedBy(final T t) {
+
         return !this.specA.isSatisfiedBy(t);
     }
 }

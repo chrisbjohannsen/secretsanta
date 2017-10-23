@@ -10,6 +10,8 @@ class DefaultMatchEngine implements IMatchEngine {
     private ISecretSantaStore store
     private Specification<FamilyMember> hasReceiverSpec
     private Specification<FamilyMember> hasGiverSpec
+    private Specification<FamilyMember> lastReceivedTimeLimitExpiredSpec
+    private Specification<FamilyMember> lastGivenTimeLimitExpiredSpec
 
     /**
      * This class implments the matching algorithm.
@@ -26,21 +28,25 @@ class DefaultMatchEngine implements IMatchEngine {
      * @param hasGiverSpec
      */
     DefaultMatchEngine(ISecretSantaStore store, Specification<FamilyMember> hasReceiverSpec,
-                       Specification<FamilyMember> hasGiverSpec) {
+                       Specification<FamilyMember> hasGiverSpec,
+                       Specification<FamilyMember> lastReceivedTimeLimitExpiredSpec,
+                       Specification<FamilyMember> lastGivenTimeLimitExpiredSpec) {
+        this.lastGivenTimeLimitExpiredSpec = lastGivenTimeLimitExpiredSpec
+        this.lastReceivedTimeLimitExpiredSpec = lastReceivedTimeLimitExpiredSpec
         this.store = store
         this.hasReceiverSpec = hasReceiverSpec
         this.hasGiverSpec = hasGiverSpec
     }
 
     Specification<FamilyMember> getHasReceiverSpec() {
-        if(!hasReceiverSpec) {
+        if (!hasReceiverSpec) {
             hasReceiverSpec = MatchSpecificationFactory.hasReceiver(store)
         }
         return hasReceiverSpec
     }
 
     Specification<FamilyMember> getHasGiverSpec() {
-        if(!hasGiverSpec){
+        if (!hasGiverSpec) {
             hasGiverSpec = MatchSpecificationFactory.hasGiver(store)
         }
         return hasGiverSpec
@@ -56,35 +62,37 @@ class DefaultMatchEngine implements IMatchEngine {
      * @return
      */
     @Override
-    FamilyMember findMatch(FamilyMember matchFor, MatchType matchType, List<FamilyMember> memberList) {
+    FamilyMember findMatch(FamilyMember matchFor,
+                           MatchType matchType, //TODO: Refactor so consumer injects an "availabilitySpec" so we can remove the dependency on MatchType
+                           List<FamilyMember> memberList,
+                           Specification<FamilyMember> timeLimitSpec) {
 
-        if(memberList.size() == 0){
+        if (memberList.size() == 0) {
             return null
         }
 
         FamilyMember familyMember = memberList[random.nextInt(memberList.size())]
 
-        if(!familyMember){
+        if (!familyMember) {
             throw new Exception("No Members in list")
         }
 
-        switch (matchType){
-
+        switch (matchType) {
             case MatchType.GIVER:
                 //validate that the randomly picked familyMember isn't already a receiver
-                if(! getHasReceiverSpec().isSatisfiedBy(familyMember) ){
+                if ((!getHasReceiverSpec().isSatisfiedBy(familyMember)).and(timeLimitSpec.isSatisfiedBy(matchFor))) {
                     return familyMember
                 }
                 break
 
             case MatchType.RECEIVER:
-                if(! getHasGiverSpec().isSatisfiedBy(familyMember)){
+                if ((!getHasGiverSpec().isSatisfiedBy(familyMember)).and(timeLimitSpec.isSatisfiedBy(familyMember))) {
                     return familyMember
                 }
                 break
         }
 
-        memberList.removeAll{ it.name == familyMember.name } //remove already tested from list
-        findMatch(matchFor, matchType, memberList) //call findMatch until we find an unmatched name
+        memberList.removeAll { it.id == familyMember.id } //remove already tested from list
+        findMatch(matchFor, matchType, memberList, timeLimitSpec) //call findMatch until we find an unmatched name
     }
 }
