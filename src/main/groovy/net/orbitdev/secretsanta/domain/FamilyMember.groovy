@@ -10,6 +10,6 @@ class FamilyMember {
 
     @Override
     String toString(){
-        return "name: ${name}\nimmediate family:\n${immediateFamily.collect { key, value -> "\t${value} : ${key}\n"}}"
+        return "name: ${name}"
     }
 }

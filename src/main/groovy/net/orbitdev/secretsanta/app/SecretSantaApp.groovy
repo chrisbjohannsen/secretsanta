@@ -49,6 +49,7 @@ class SecretSantaApp {
 
             value.each {
                 assert !it.giver.immediateFamily.keySet().contains(it.receiver.id)
+                assert !it.receiver.immediateFamily.keySet().contains(it.giver.id)
                //println it.giver.toString()
             }
         }
@@ -85,8 +86,6 @@ class SecretSantaApp {
             batch[1].immediateFamily.put(batch[4],'parent')
             batch[4].immediateFamily.put(batch[1],'child')
         }
-
-        println "family store created"
         store
     }
 }

@@ -35,6 +35,18 @@ class MatchFamilyMemberSpecification extends CompositeSpecification<FamilyMember
     }
 
     /**
+     * Test constructor
+     * @param timeLimitSpec
+     * @param hasMatchSpec
+     * @param isFamilyMemberSpec
+     */
+    MatchFamilyMemberSpecification(Specification<FamilyMember> timeLimitSpec, Specification<FamilyMember> hasMatchSpec, Specification<FamilyMember> isFamilyMemberSpec) {
+        this.timeLimitSpec = timeLimitSpec
+        this.hasMatchSpec = hasMatchSpec
+        this.isFamilyMemberSpec = isFamilyMemberSpec
+    }
+
+    /**
      * Executes the specs and returns the combined result
      * @param familyMember
      * @return True if all specs are satisfied

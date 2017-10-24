@@ -1,58 +1,115 @@
 package net.orbitdev.secretsanta.engine
 
-import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.domain.FamilyMember
-import spock.lang.Shared
 import spock.lang.Specification
 
 class MatchFamilyMemberSpecificationSpecification extends Specification {
 
-    @Shared
-    ISecretSantaStore store
+    net.orbitdev.secretsanta.patterns.specification.Specification<FamilyMember> timeLimitSpec
+    net.orbitdev.secretsanta.patterns.specification.Specification<FamilyMember> hasMatchSpec
+    net.orbitdev.secretsanta.patterns.specification.Specification<FamilyMember> isFamilyMemberSpec
+    net.orbitdev.secretsanta.patterns.specification.Specification<FamilyMember> matchSpec
 
     void setup(){
-        store = Mock(ISecretSantaStore)
+        timeLimitSpec = Mock()
+        hasMatchSpec = Mock()
+        isFamilyMemberSpec = Mock()
+        matchSpec = new MatchFamilyMemberSpecification(timeLimitSpec, hasMatchSpec,isFamilyMemberSpec)
     }
 
-    void "false when not a giver"() {
+    void "returns true when timeLimit is satisfied, hasMatch is not satisfied and isFamilyMember is not satisfied"() {
         setup:
-        store.isGiver(_) >> true
-        store.isReceiver(_) >> false
+        timeLimitSpec.isSatisfiedBy(_) >> true
+        hasMatchSpec.isSatisfiedBy(_) >> false
+        isFamilyMemberSpec.isSatisfiedBy(_) >> false
 
         when:
-        def combined = new MatchFamilyMemberSpecification( new HasReceiverMatchSpecification(store), new HasGiverMatchSpecification(store) )
-
-        def result = combined.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
-
-        then:
-        !result
-    }
-
-    void "false when not a receiver"() {
-        setup:
-        store.isGiver(_) >> false
-        store.isReceiver(_) >> true
-
-        when:
-        def combined = new MatchFamilyMemberSpecification( new HasReceiverMatchSpecification(store), new HasGiverMatchSpecification(store) )
-
-        def result = combined.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
-
-        then:
-        !result
-    }
-
-    void "true when both a giver and receiver"() {
-        setup:
-        store.isGiver(_) >> true
-        store.isReceiver(_) >> true
-
-        when:
-        def combined = new MatchFamilyMemberSpecification( new HasReceiverMatchSpecification(store), new HasGiverMatchSpecification(store) )
-
-        def result = combined.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
 
         then:
         result
     }
+
+    void "returns false when hasMatch is satisfied"() {
+        setup:
+        timeLimitSpec.isSatisfiedBy(_) >> true
+        hasMatchSpec.isSatisfiedBy(_) >> true
+        isFamilyMemberSpec.isSatisfiedBy(_) >> false
+
+        when:
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+
+        then:
+        !result
+    }
+
+    void "returns false when isFamilyMember is satisfied"() {
+        setup:
+        timeLimitSpec.isSatisfiedBy(_) >> true
+        hasMatchSpec.isSatisfiedBy(_) >> false
+        isFamilyMemberSpec.isSatisfiedBy(_) >> true
+
+        when:
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+
+        then:
+        !result
+    }
+    void "returns false when all specs satisfied"() {
+        setup:
+        timeLimitSpec.isSatisfiedBy(_) >> true
+        hasMatchSpec.isSatisfiedBy(_) >> true
+        isFamilyMemberSpec.isSatisfiedBy(_) >> true
+
+        when:
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+
+        then:
+        !result
+    }
+
+
+    void "returns false when all spec are not satisfied"() {
+        setup:
+        timeLimitSpec.isSatisfiedBy(_) >> false
+        hasMatchSpec.isSatisfiedBy(_) >> false
+        isFamilyMemberSpec.isSatisfiedBy(_) >> false
+
+        when:
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+
+        then:
+        !result
+    }
+
+
+
+
+    void "returns false when timeLimit & hasMatch not satisfied"() {
+        setup:
+        timeLimitSpec.isSatisfiedBy(_) >> false
+        hasMatchSpec.isSatisfiedBy(_) >> false
+        isFamilyMemberSpec.isSatisfiedBy(_) >> true
+
+        when:
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+
+        then:
+        !result
+    }
+
+    void "returns false when timeLimit & isFamily not satisfied"() {
+        setup:
+        timeLimitSpec.isSatisfiedBy(_) >> false
+        hasMatchSpec.isSatisfiedBy(_) >> true
+        isFamilyMemberSpec.isSatisfiedBy(_) >> false
+
+        when:
+        def result = matchSpec.isSatisfiedBy(new FamilyMember(id: 1, name: 'Lena'))
+
+        then:
+        !result
+    }
+
+
 }

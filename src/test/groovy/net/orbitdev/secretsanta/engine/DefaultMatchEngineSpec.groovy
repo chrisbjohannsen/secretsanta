@@ -10,11 +10,8 @@ import net.orbitdev.secretsanta.patterns.specification.Specification as MatchSpe
 class DefaultMatchEngineSpec extends Specification {
 
     DefaultMatchEngine engine
-    MatchSpec<FamilyMember> giverSpec
-    MatchSpec<FamilyMember> receiverSpec
     ISecretSantaStore store
-    MatchSpec<FamilyMember> timeLimitSpec
-    MatchSpec<FamilyMember> isFamilyMemberSpec
+    MatchSpec<FamilyMember> canMatchSpec
 
     @Shared
     def members = []
@@ -22,91 +19,45 @@ class DefaultMatchEngineSpec extends Specification {
 
     void setup() {
         store = Mock(ISecretSantaStore)
-        giverSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
-        receiverSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
-        timeLimitSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
-        isFamilyMemberSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
+        canMatchSpec = Mock(net.orbitdev.secretsanta.patterns.specification.Specification)
         members = SpecificationTestUtils.mockFamilyMembers()
         storeData = SpecificationTestUtils.mockSecretSantaMatchesData()
-
-        engine = new DefaultMatchEngine(store, receiverSpec, giverSpec)
+        engine = new DefaultMatchEngine(store)
     }
 
-    def "return a familyMember when no giver match found"() {
+    def "return a familyMember when a match is found"() {
         setup:
-        giverSpec.isSatisfiedBy(_) >> false
-        store.getMatches(5) >> null
-        timeLimitSpec.isSatisfiedBy(_) >> true
+        def member = new FamilyMember(id: 5)
+        store.getMatches(5) >> storeData.get(5)
+        canMatchSpec.isSatisfiedBy(_) >> true
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
+        def result = engine.findMatch(member,  members.toList(), canMatchSpec)
 
         then:
         result instanceof FamilyMember
 
     }
 
-    def "return a familyMember when no receiver match found"() {
+    def "returns null when no matches are satisfied"() {
         setup:
-        receiverSpec.isSatisfiedBy(_) >> false
-        timeLimitSpec.isSatisfiedBy(_) >> true
+        canMatchSpec.isSatisfiedBy(_) >> false
+        store.getMatches(5) >> storeData.get(5)
+
+        when:
+        def result = engine.findMatch(new FamilyMember(id: 5),[new FamilyMember(id:2, name: "Test")], canMatchSpec)
+
+        then:
+        result == null
+    }
+
+    def "returns null when no members are passed in are found"() {
+        setup:
+        canMatchSpec.isSatisfiedBy(_) >> true
         store.getMatches(5) >> null
 
         when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
-
-        then:
-        result instanceof FamilyMember
-
-    }
-
-    def "returns null when no receiver matches are found"() {
-        setup:
-        receiverSpec.isSatisfiedBy(_) >> true
-        giverSpec.isSatisfiedBy(_) >> true
-        timeLimitSpec.isSatisfiedBy(_) >> true
-
-        when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
-
-        then:
-        result == null
-    }
-
-    def "returns null when no giver matches are found"() {
-        setup:
-        receiverSpec.isSatisfiedBy(_) >> true
-        giverSpec.isSatisfiedBy(_) >> true
-        timeLimitSpec.isSatisfiedBy(_) >> true
-
-        when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
-
-        then:
-        result == null
-    }
-
-    def "returns null when subject has been a giver in the past 3 years"() {
-        setup:
-        receiverSpec.isSatisfiedBy(_) >> false
-        giverSpec.isSatisfiedBy(_) >> false
-        timeLimitSpec.isSatisfiedBy(_) >> false
-
-        when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.RECEIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
-
-        then:
-        result == null
-    }
-
-    def "returns null when subject has been a receiver in the past 3 years"() {
-        setup:
-        receiverSpec.isSatisfiedBy(_) >> false
-        giverSpec.isSatisfiedBy(_) >> false
-        timeLimitSpec.isSatisfiedBy(_) >> false
-
-        when:
-        def result = engine.findMatch(new FamilyMember(id: 5), MatchType.GIVER, members.toList(), timeLimitSpec, isFamilyMemberSpec)
+        def result = engine.findMatch(new FamilyMember(id: 5),[], canMatchSpec)
 
         then:
         result == null
