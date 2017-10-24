@@ -46,7 +46,7 @@ In practical terms, one would need to implement this interface as a facade over 
 
 Based on the given requirements, I would choose a relational database management system that supports transactions to back this application. The transaction support will be important as the number of concurrent writes grows i.e. as the application is scaled up. 
 
-MySql is a favorite choice due to its relativley small footprint, easy to understand SQL variant and nice tooling. It would likely work fine for a single user verison of the application. However, while reseaching, I found that it has some pretty tricky [gotchas](https://hashrocket.com/blog/posts/mysql-has-transactions-sorta) when it comes to transaction support, making it less desirable for the longer term.
+MySql is a favorite choice due to its relativley small footprint, easy to understand SQL variant and freely availble tooling. It would likely work fine for a single user verison of the application. However, while reseaching, I found that it has some pretty tricky [gotchas](https://hashrocket.com/blog/posts/mysql-has-transactions-sorta) when it comes to transaction support, making it less desirable for the longer term.
 
 While PostgreSQL is a bit less friendly, I think it a better choice for a couple of reasons. The transaction model is built with multiuser, concurrent applications in mind with the transaction isolation level configurable per session. Additionally, PostgreSQL has a strong open source support community which could come in helpful when things go sideways.
 
@@ -54,13 +54,8 @@ This application seems to lend itself to a combination NoSQL Key/Value, Graph da
 
 _Scalability Discussion:_
 
-The solution I build wouldn't scale well as structured. I think to scale an application to the scope of the size of 
-the USA population, an entirely different architectural pattern would need to be employed, and the end result would be
-far more complex than what I constructed for the problem presented. If I were asked to build an app with that scale in 
-mind, I would propose something to the effect of:
+The first thing I would try to do to scale this application would be to add some worker threads to help parallelize match generation. However I think to scale an application to the scope of the size of the population of the US, an entirely different architectural pattern would need to be employed, and the end result would be far more complex than what I constructed for the problem presented. If I were asked to build an app with that scale in mind, I would propose something to the effect of:
 
-1. Segment the data into small chunks and pass those chunks to an array of processing applications 
-that in turn pass their results to a second set of applications that combine the results and eliminate duplication 
-within the entire result set. 
-2. Map-Reduce pattern
-3. Shared data via a transactional data store
+1. Devise a mechanism to segment the data into small chunks and pass those chunks to an array of processing applications that in turn pass their results to a second set of applications that combine the results and eliminate duplication within the resulting matches. 
+2. Implement a NoSQL Key/Value store that is highly available and partition tolerant to store the matches,sacrificing consistency across the nodes since it won't break anyones heart to get two gifts.
+3. Investing the implementation of a Graph database to store the familyMembers and relationships. This may have the benefit of eliminating the need to code the rules for immediate family exclusions by leveraging the graph database to select groups to be matched that exclude members in said relationships. This is speculation on my part based on what very little I know about graph database technologies.
