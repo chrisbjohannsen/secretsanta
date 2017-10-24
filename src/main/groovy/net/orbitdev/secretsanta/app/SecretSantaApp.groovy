@@ -28,7 +28,7 @@ class SecretSantaApp {
      */
     static void main(args) {
 
-        def familyMemberStore = createFamilyRelationships(fillInMemoryStore(2500, new InMemoryFamilyMemberStore()))
+        def familyMemberStore = createFamilyRelationships(fillInMemoryStore(1000, new InMemoryFamilyMemberStore()))
 
         def secretSantaStore = new InMemorySecretSantaStore()
 

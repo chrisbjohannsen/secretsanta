@@ -1,6 +1,7 @@
 package net.orbitdev.secretsanta.engine
 
 import net.orbitdev.secretsanta.domain.FamilyMember
+import net.orbitdev.secretsanta.patterns.specification.CompositeSpecification
 import net.orbitdev.secretsanta.patterns.specification.Specification
 
 /**
@@ -8,9 +9,12 @@ import net.orbitdev.secretsanta.patterns.specification.Specification
  */
 interface IMatchEngine {
 
+    @Deprecated
     FamilyMember findMatch(FamilyMember matchFor,
                            MatchType matchType,
                            List<FamilyMember> memberList,
                            Specification<FamilyMember> timeLimitSpec,
                            Specification<FamilyMember> isFamilyMemberSpec)
+
+    FamilyMember findMatch(FamilyMember target, List<FamilyMember> memberList, CompositeSpecification<FamilyMember> matchSpec)
 }

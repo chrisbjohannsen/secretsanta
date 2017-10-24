@@ -83,8 +83,8 @@ class SecretSantaServiceSpec extends Specification {
         service.generateMatches()
 
         then:
-        members.size() * engine.findMatch(_,MatchType.RECEIVER,_,_,_)
-        members.size() * engine.findMatch(_,MatchType.GIVER,_,_,_)
+        members.size() * engine.findMatch(_,_,_)
+        members.size() * engine.findMatch(_,_,_)
     }
 
 }

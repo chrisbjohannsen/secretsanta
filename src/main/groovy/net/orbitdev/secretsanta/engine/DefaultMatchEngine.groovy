@@ -2,6 +2,7 @@ package net.orbitdev.secretsanta.engine
 
 import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.domain.FamilyMember
+import net.orbitdev.secretsanta.patterns.specification.CompositeSpecification
 import net.orbitdev.secretsanta.patterns.specification.Specification
 
 class DefaultMatchEngine implements IMatchEngine {
@@ -93,5 +94,26 @@ class DefaultMatchEngine implements IMatchEngine {
 
         memberList.removeAll { it.id == familyMember.id } //remove already tested from list
         findMatch(matchFor, matchType, memberList, timeLimitSpec, isFamilyMemberSpec) //call findMatch until we find an unmatched name
+    }
+
+    @Override
+    FamilyMember findMatch(FamilyMember target, List<FamilyMember> memberList, CompositeSpecification<FamilyMember> matchSpec) {
+
+        if (memberList.size() == 0) {
+            return null
+        }
+
+        FamilyMember familyMember = memberList[random.nextInt(memberList.size())]
+
+        if (!familyMember) {
+            throw new Exception("No Members in list")
+        }
+
+        if(matchSpec.isSatisfiedBy(familyMember)){
+            return familyMember
+        }
+
+        memberList.removeAll { it.id == familyMember.id } //remove already tested from list
+        findMatch(target, memberList, matchSpec)
     }
 }

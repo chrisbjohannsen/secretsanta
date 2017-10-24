@@ -7,6 +7,7 @@ import net.orbitdev.secretsanta.engine.IMatchEngine
 import net.orbitdev.secretsanta.engine.IsImmediateFamilySpecification
 import net.orbitdev.secretsanta.engine.LastGiverMatchThreeYearsOrGreaterSpecification
 import net.orbitdev.secretsanta.engine.LastReceiverMatchThreeYearsOrGreaterSpecification
+import net.orbitdev.secretsanta.engine.MatchFamilyMemberSpecification
 import net.orbitdev.secretsanta.engine.MatchType
 import net.orbitdev.secretsanta.patterns.specification.Specification
 
@@ -61,14 +62,8 @@ class SecretSantaService {
 
         //remove target from available members
         memberClone.removeAll{ it.id == targetMember.id }
-
-        Specification<FamilyMember> timeLimitSpec = (matchType == MatchType.GIVER) ?
-                new LastReceiverMatchThreeYearsOrGreaterSpecification(matchStore, targetMember) :
-                new LastGiverMatchThreeYearsOrGreaterSpecification(matchStore, targetMember)
-
-        Specification<FamilyMember> isFamilyMemberSpec = new IsImmediateFamilySpecification(targetMember)
-
-        matchEngine.findMatch(targetMember, matchType, memberClone, timeLimitSpec, isFamilyMemberSpec)
+        def matchSpec = new MatchFamilyMemberSpecification(matchType,targetMember,matchStore)
+        matchEngine.findMatch(targetMember, memberClone, matchSpec)
     }
 
     /**
