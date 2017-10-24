@@ -33,20 +33,6 @@ class DefaultMatchEngine implements IMatchEngine {
         this.hasGiverSpec = hasGiverSpec
     }
 
-    Specification<FamilyMember> getHasReceiverSpec() {
-        if (!hasReceiverSpec) {
-            hasReceiverSpec = MatchSpecificationFactory.hasReceiver(store)
-        }
-        return hasReceiverSpec
-    }
-
-    Specification<FamilyMember> getHasGiverSpec() {
-        if (!hasGiverSpec) {
-            hasGiverSpec = MatchSpecificationFactory.hasGiver(store)
-        }
-        return hasGiverSpec
-    }
-
     /**
      * Picks a randomly selected family member from the list and validates the member against the santastore.
      * If it is already matched, removed it from the list and call recursively until a match is made or the list is
@@ -58,9 +44,9 @@ class DefaultMatchEngine implements IMatchEngine {
      */
     @Override
     FamilyMember findMatch(FamilyMember matchFor,
-                           MatchType matchType, //TODO: Refactor so consumer injects an "availabilitySpec" so we can remove the dependency on MatchType
+                           MatchType matchType,
                            List<FamilyMember> memberList,
-                           Specification<FamilyMember> timeLimitSpec, //TODO: Simplify the spec injection. Should be able to construct composite to be injected
+                           Specification<FamilyMember> timeLimitSpec,
                            Specification<FamilyMember> isFamilyMemberSpec) {
 
         if (memberList.size() == 0) {
@@ -96,6 +82,15 @@ class DefaultMatchEngine implements IMatchEngine {
         findMatch(matchFor, matchType, memberList, timeLimitSpec, isFamilyMemberSpec) //call findMatch until we find an unmatched name
     }
 
+    /**
+     * Picks a randomly selected family member from the list and validates the member against the santastore.
+     * If it is already matched, removed it from the list and call recursively until a match is made or the list is
+     * exhausted.
+     * @param target
+     * @param memberList
+     * @param matchSpec
+     * @return
+     */
     @Override
     FamilyMember findMatch(FamilyMember target, List<FamilyMember> memberList, CompositeSpecification<FamilyMember> matchSpec) {
 

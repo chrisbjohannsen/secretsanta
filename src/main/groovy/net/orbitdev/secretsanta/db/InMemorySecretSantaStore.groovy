@@ -2,7 +2,6 @@ package net.orbitdev.secretsanta.db
 
 import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.domain.SecretSantaMatch
-
 import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 

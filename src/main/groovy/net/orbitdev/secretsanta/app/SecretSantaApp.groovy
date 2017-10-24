@@ -47,10 +47,9 @@ class SecretSantaApp {
             assert value.size() == 2
             assert secretSantaStore.matches.keySet().count { it == key } == 1
 
-
-//            println "FamilyMember : ${key} - Record Count ${value.size()}"
             value.each {
                 assert !it.giver.immediateFamily.keySet().contains(it.receiver.id)
+               //println it.giver.toString()
             }
         }
 

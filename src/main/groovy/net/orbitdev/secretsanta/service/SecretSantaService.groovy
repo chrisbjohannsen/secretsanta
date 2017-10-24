@@ -4,12 +4,8 @@ import net.orbitdev.secretsanta.db.IFamilyMemberStore
 import net.orbitdev.secretsanta.db.ISecretSantaStore
 import net.orbitdev.secretsanta.domain.FamilyMember
 import net.orbitdev.secretsanta.engine.IMatchEngine
-import net.orbitdev.secretsanta.engine.IsImmediateFamilySpecification
-import net.orbitdev.secretsanta.engine.LastGiverMatchThreeYearsOrGreaterSpecification
-import net.orbitdev.secretsanta.engine.LastReceiverMatchThreeYearsOrGreaterSpecification
 import net.orbitdev.secretsanta.engine.MatchFamilyMemberSpecification
 import net.orbitdev.secretsanta.engine.MatchType
-import net.orbitdev.secretsanta.patterns.specification.Specification
 
 /**
  * Orchestrates the creation of matches and populates the santa store
@@ -20,6 +16,12 @@ class SecretSantaService {
     private ISecretSantaStore matchStore
     private IMatchEngine matchEngine
 
+    /**
+     * Constructor
+     * @param familyStore
+     * @param matchStore
+     * @param matchEngine
+     */
     SecretSantaService(IFamilyMemberStore familyStore, ISecretSantaStore matchStore, IMatchEngine matchEngine) {
         this.familyMemberStore = familyStore
         this.matchStore = matchStore
