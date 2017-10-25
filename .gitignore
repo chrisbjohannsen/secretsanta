@@ -11,6 +11,7 @@
 .idea/**/tasks.xml
 .idea/dictionaries
 .idea/preferred-vcs.xml
+.idea/modules.xml
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/

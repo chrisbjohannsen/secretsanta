@@ -25,6 +25,8 @@ Secret Santas.
 
 _Algorithm Discussion:_
 
+![Time vs Members Chart](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1XQ-vUHtDDO3huYcsTKCsVjnNOm4EQCPLfLpVMQXKBSH9T06Pm3YHt_iNbHtEooFLQceZqkzkmh8N/pubchart?oid=1197328393&format=image)
+
 Starting with the collection of FamilyMembers, pick the first and create a match as both a Giver and a Receiver.
 Remove the starter from the pool to prevent touching it again as we move through the collection. 
 Pick a random FamilyMember from the remaining pool and test to see if it has previously been, matched, 
