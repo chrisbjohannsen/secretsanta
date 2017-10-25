@@ -25,7 +25,11 @@ Secret Santas.
 
 _Algorithm Discussion:_
 
+Runtime Complexity : This is a linear algorithm O(n) 
 ![Time vs Members Chart](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1XQ-vUHtDDO3huYcsTKCsVjnNOm4EQCPLfLpVMQXKBSH9T06Pm3YHt_iNbHtEooFLQceZqkzkmh8N/pubchart?oid=1197328393&format=image)
+
+Memory Charateristics: This is a linear algorithm O(n)
+![Average Heap Size(MB) vs Total Number of Members](chart-2.png)
 
 Starting with the collection of FamilyMembers, pick the first and create a match as both a Giver and a Receiver.
 Remove the starter from the pool to prevent touching it again as we move through the collection. 
