@@ -25,6 +25,32 @@ Secret Santas.
 
 _Algorithm Discussion:_
 
+Methodology:
+To generate the metrics used to analyze the complexity I did some rudimentary tooling in the main method of the SecretSantaApp.groovy file. 
+To measure execution time I captured start and end times of the SecretSantaService.generateMatches() method and printed the difference to the console 
+then used a spreadsheet to track runs and calculate averages. 
+
+To measure average heap sizes I used the jvisualvm tool packaged with Java8 JDK to monitor multiple runs, increasing the member count manually for each run set.  I took the spikes in the heap size and averaged for the run, with the assumption that the spikes
+represented the max memory used per run.
+
+I employed a simple groovy range closure to simplify the operation and ran each set 5 times. Sets started at 1000 inputs and increased by 1000 up to 4000, which was near the tipping point 
+for the machine I was testing on.
+
+Charts were generated using the averages for the each run set and a trend line plot applied to each.
+
+Test were completed on a Linux Mint VM hosted on a Windows 10 Lenovo Laptop. The machine has 32GB of RAM of which 24GB is dedicated to the VM. 
+
+
+Runtime Characteristics: 
+This is a linear-time algorithm, as the number of members increases, time to process increases proportionally. 
+![Time vs Members Chart](chart.png)
+
+Memory Characteristics: 
+This is a linear-space algorithm, as the number of members increases, the memory required to complete the operations increase proportionally.
+![Average Heap Size(MB) vs Total Number of Members](chart-2.png)
+
+Description:
+
 Starting with the collection of FamilyMembers, pick the first and create a match as both a Giver and a Receiver.
 Remove the starter from the pool to prevent touching it again as we move through the collection. 
 Pick a random FamilyMember from the remaining pool and test to see if it has previously been, matched, 

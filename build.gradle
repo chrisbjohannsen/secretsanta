@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
@@ -17,3 +18,10 @@ dependencies {
                 'org.spockframework:spock-core:1.1-groovy-2.4'
 
 }
+jar {
+    manifest {
+        attributes 'Main-Class': 'net.orbitdev.secretsanta.app.SecretSantaApp'
+    }
+}
+
+mainClassName = 'net.orbitdev.secretsanta.app.SecretSantaApp'
