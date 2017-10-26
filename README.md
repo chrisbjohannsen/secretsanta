@@ -36,9 +36,10 @@ represented the max memory used per run.
 I employed a simple groovy range closure to simplify the operation and ran each set 5 times. Sets started at 1000 inputs and increased by 1000 up to 4000, which was near the tipping point 
 for the machine I was testing on.
 
-
-Run 1 ![1000 Member Run](1000Members.png) | Run 2 ![2000 Member Run](2000Members.png)
-Run 3 ![3000 Member Run](3000Members.png) | Run 4 ![4000 Member Run](4000Members.png)
+<table>
+<tr><td>![1000 Member Run](1000Members.png)</td><td>![2000 Member Run](2000Members.png)</td></tr>
+<tr><td>![3000 Member Run](3000Members.png)</td><td>[4000 Member Run](4000Members.png)</td></tr>
+</table>
 
 Charts were generated using the averages for the each run set and a trend line plot applied to each.
 
